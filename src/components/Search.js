@@ -1,20 +1,41 @@
 import React, { useState } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
+import { GEO_API_URL, geoApiOptions } from "../api";
 
-const Search = ({onSearchChange}) => {
+const Search = ({ onSearchChange }) => {
   const [search, setSearch] = useState(null);
-  // const [search, setSearch] = useState("");
+
+  const loadOptions = async (inputValue) => {
+    //   inputValue here is the value the user is typing in the input. This is the same as the searchData but only used differently
+    return fetch(
+      `${GEO_API_URL}/cities?minPopulation=1000000&namePrefix=${inputValue}`,
+      geoApiOptions
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        return {
+          options: response.data.map((city) => {
+            return {
+              value: `${city.latitude} ${city.longitude}`,
+              label: `${city.name}, ${city.countryCode}`,
+            };
+          }),
+        };
+      });
+//     try {
+// 	const response = await fetch(GEO_API_URL, geoApiOptions);
+// 	const result = await response.text();
+// 	console.log(result);
+// } catch (error) {
+// 	console.error(error);
+// }
+  };
 
   const handleOnChange = (searchData) => {
-    //  SearchData is the data that we entered in our input field (asyncPaginate). That data wil be retrieved in our handleOnChange function.
+    //  SearchData is the data that the user enters in the input field (asyncPaginate). That data wil be retrieved in our handleOnChange function.
     setSearch(searchData);
     onSearchChange(searchData);
   };
-
-  // const handleChange = (event) => {
-  //   setSearch(event.target.value)
-  //   console.log(event.target.value)
-  // }
 
   return (
     <div>
@@ -25,14 +46,10 @@ const Search = ({onSearchChange}) => {
         debounceTimeout={600}
         value={search}
         onChange={handleOnChange}
+        loadOptions={loadOptions}
+        // The loadOptions above helps us to fetch data. For example, when we are searching for london
+        // and we type 'lon', it will search the api to find all the cities with the prefix 'lon'...
       />
-
-      {/* <input
-        type="text"
-        placeholder="Search for City"
-        onChange={handleChange}
-        value={search}
-      /> */}
     </div>
   );
 };
