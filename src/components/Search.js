@@ -5,6 +5,8 @@ import { GEO_API_URL, geoApiOptions } from "../api";
 const Search = ({ onSearchChange }) => {
   const [search, setSearch] = useState(null);
 
+  // This loadOptions function is called whenever a user types or searches any value.It fecthes
+  // data from the API depending on what the user types (inputValue) in the input or search bar
   const loadOptions = async (inputValue) => {
     //   inputValue here is the value the user is typing in the input. This is the same as the searchData but only used differently
     return fetch(
@@ -22,13 +24,6 @@ const Search = ({ onSearchChange }) => {
           }),
         };
       });
-//     try {
-// 	const response = await fetch(GEO_API_URL, geoApiOptions);
-// 	const result = await response.text();
-// 	console.log(result);
-// } catch (error) {
-// 	console.error(error);
-// }
   };
 
   const handleOnChange = (searchData) => {
